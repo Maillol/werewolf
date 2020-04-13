@@ -1,0 +1,12 @@
+autobahn==20.4.1
+cbor==1.0.0
+cbor2==5.1.0
+cffi==1.14.0
+cryptography==2.9
+flatbuffers==1.12
+msgpack==1.0.0
+py-ubjson==0.15.0
+pycparser==2.20
+six==1.14.0
+txaio==20.4.1
+ujson==2.0.3

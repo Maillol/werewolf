@@ -1,0 +1,7 @@
+venv
+crossbario/.crossbar/key.priv     
+crossbario/.crossbar/key.pub      
+crossbario/.crossbar/node.pid
+front/werewolf/node_modules/
+__pycache__
+bundle.js
