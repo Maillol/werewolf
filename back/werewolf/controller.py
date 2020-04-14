@@ -1,8 +1,10 @@
 """
 com.werewolf.{game}.user.{user}.start_game         {"role": ""}
 
-com.werewolf.{game}.
-com.werewolf.{game}.role.{role}.enter_in_phase.{phase}     {"active": [], "selectable": []}
+com.werewolf.{game}.enter_in_phase.{phase}
+com.werewolf.{game}.role.{role}.enter_in_phase.{phase}     {"is_night": false,
+                                                            "active": [],
+                                                            "selectable": []}
 
 com.werewolf.{game}.
 com.werewolf.{game}.role.{role}.select_player      {"name": "", selected: 0}
