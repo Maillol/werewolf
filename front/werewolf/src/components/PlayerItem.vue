@@ -1,11 +1,12 @@
 <template>
-  <li>
-    <button
-        v-bind:disabled="!player.selectable"
-        v-on:click="$emit('player-clicked')">{{ player.name }}</button>
-    <span v-if="player.role">{{ player.role }}</span>
-    <span>{{ player.selected }}</span>
-  </li>
+  <tr>
+    <td>{{ player.name }}</td>
+    <td><span v-if="player.role">{{ player.role }}</span></td>
+    <td><button
+        v-if="player.selectable"
+        v-on:click="$emit('player-clicked')">{{ "kill" }}</button></td>
+    <td>{{ player.selected }}</td>
+  </tr>
 </template>
 
 <script>

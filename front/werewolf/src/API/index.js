@@ -10,23 +10,23 @@ var onSubscribeWithError = function (error) {
     console.log('failed to subscribe to topic', error);
 };
 
-var subscribeAfterJoinGameFactory = function (gameName, playerName) {
+var subscribeAfterJoinGameFactory = function (api, gameName, playerName) {
     return function (result) {
         var prefix = `com.werewolf.${gameName}`;
-        that.session.subscribe(`${prefix}.enter_in_phase`,
-                               that.$onEnterInPhase.bind(that),
-                               {match: "prefix"}).then(onSubscribeWithSuccess, onSubscribeWithError);
-        that.session.subscribe(`${prefix}.select_player`,
-                               that.$onSelectedPlayer.bind(that)).then(onSubscribeWithSuccess, onSubscribeWithError);
-        that.session.subscribe(`${prefix}.close_phase`,
-                               that.$onClosePhase.bind(that),
-                               {match: "prefix"}).then(onSubscribeWithSuccess, onSubscribeWithError);
-        that.session.subscribe(`${prefix}.add_player`,
-                                that.$onPlayerJoin.bind(that)).then(onSubscribeWithSuccess, onSubscribeWithError);
-        that.session.subscribe(`${prefix}.user.${playerName}.start_game`,
-                                that.$onPlayerStartGame.bind(that)).then(onSubscribeWithSuccess, onSubscribeWithError);
+        api.session.subscribe(`${prefix}.enter_in_phase`,
+                           api.$onEnterInPhase.bind(api),
+                           {match: "prefix"}).then(onSubscribeWithSuccess, onSubscribeWithError);
+        api.session.subscribe(`${prefix}.select_player`,
+                           api.$onSelectedPlayer.bind(api)).then(onSubscribeWithSuccess, onSubscribeWithError);
+        api.session.subscribe(`${prefix}.close_phase`,
+                           api.$onClosePhase.bind(api),
+                           {match: "prefix"}).then(onSubscribeWithSuccess, onSubscribeWithError);
+        api.session.subscribe(`${prefix}.add_player`,
+                          api.$onPlayerJoin.bind(api)).then(onSubscribeWithSuccess, onSubscribeWithError);
+        api.session.subscribe(`${prefix}.user.${playerName}.start_game`,
+                          api.$onPlayerStartGame.bind(api)).then(onSubscribeWithSuccess, onSubscribeWithError);
         return result;
-    }
+    };
 }
 
 /* callbacks:
@@ -80,18 +80,19 @@ export default class API {
         );
     }
     createGame(gameName, playerName) {
-        var that=this;
+        var subscribeAfterJoinGame = subscribeAfterJoinGameFactory(this, gameName, playerName);
+
         return this.session.call('com.werewolf.create_game', [gameName, playerName]).then(
-            subscribeAfterJoinGameFactory(gameName, playerName),
+            subscribeAfterJoinGame,
             function (error) {
                 throw error;
             }
         );
     }
     joinGame(gameName, playerName) {
-        var that=this;
+        var subscribeAfterJoinGame = subscribeAfterJoinGameFactory(this, gameName, playerName);
         return this.session.call('com.werewolf.join_game', [gameName, playerName]).then(
-            subscribeAfterJoinGameFactory(gameName, playerName),
+            subscribeAfterJoinGame,
             function (error) {
                 throw error;
             }
@@ -124,9 +125,9 @@ export default class API {
         var prefix = `com.werewolf.${gameName}.role.${role}`;
 
         this.session.subscribe(`${prefix}.enter_in_phase`,
-            this.$onEnterInPhase, {match: "prefix"}).then(onSubscribeWithSuccess, onSubscribeWithError);
+            this.$onEnterInPhase.bind(this), {match: "prefix"}).then(onSubscribeWithSuccess, onSubscribeWithError);
         this.session.subscribe(`${prefix}.select_player`,
-            this.$onSelectedPlayer).then(onSubscribeWithSuccess, onSubscribeWithError);
+            this.$onSelectedPlayer.bind(this)).then(onSubscribeWithSuccess, onSubscribeWithError);
 
         var that = this;
         return this.session.call('com.werewolf.player_listen_topic', [gameName, playerName]).then(
@@ -143,6 +144,7 @@ export default class API {
         );
     }
     $onEnterInPhase(args, kwargs, details) {
+        console.log(args, kwargs, details);
         var phase = details.topic.substring(details.topic.lastIndexOf('.') + 1);
         if (args[0].is_night !== undefined && this.onEnterInPhase !== undefined) {
             this.onEnterInPhase({phase: phase, is_night: args[0].is_night});

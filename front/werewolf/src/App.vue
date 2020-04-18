@@ -11,14 +11,12 @@
         v-if="displayStartGameButton">
             <button v-on:click="startGame">Start</button>
     </div>
-    <ol>
-        <player-item
-            v-for="player in players"
-            v-bind:player="player"
-            v-bind:key="player.name"
-            v-on:player-clicked="selectPlayer(player.name)"
-        ></player-item>
-    </ol>
+    <div>
+        <player-board
+            v-bind:players="players"
+            v-bind:selectPlayer="selectPlayer"
+        ></player-board>
+    </div>
   </div>
 </template>
 
@@ -27,14 +25,14 @@ import Vue from 'vue'
 import API from './API/index.js'
 
 import JoinOrCreate from './components/JoinOrCreate.vue'
-import PlayerItem from './components/PlayerItem.vue'
+import PlayerBoard from './components/PlayerBoard.vue'
 
 
 export default {
   name: 'App',
   components: {
     JoinOrCreate,
-    PlayerItem
+    PlayerBoard
   },
   data: function () {
       return {
@@ -94,7 +92,7 @@ export default {
         var self = this;
         this.api.joinGame(this.gameName, this.playerName).then(
             function (result) {
-                self.message = 'Vous avez rejoin la parti';
+                self.message = `Vous avez rejoin la parti this.gameName`;
                 self.players = result;
                 self.displayLoginPage = false;
             },
@@ -116,7 +114,6 @@ export default {
         );
     },
     selectPlayer(selectPlayer) {
-        console.log('selectPlayer', selectPlayer, this, this.api, this.api.selectPlayer);
         this.api.selectPlayer(this.gameName, selectPlayer, this.playerName).then(
             function (result) {
                 if (result) {
@@ -133,14 +130,13 @@ export default {
     },
     updatePlayer(playerName, key, value) {
         var index = this.players.findIndex((element) => element.name === playerName);
-        console.log('updatePlayer', playerName, this.players);
         Vue.set(this.players[index], key, value);
     },
     onEnterInPhase(phase) {
-        console.log(phase);
+        var phaseName = phase.phase;
+        self.message = `Entrée dans la phase ${phaseName}`;
     },
     onClosePhase(phaseDone) {
-        console.log('close phase', phaseDone);
         var killed = phaseDone.killed;
         var resurrect = phaseDone.resurrect;
         var winner = phaseDone.winner;
@@ -159,6 +155,7 @@ export default {
             this.message = `${winner} ont gagnés`;
         }
         this.players.forEach((player) => this.updatePlayer(player.name, 'selectable', false));
+        this.players.forEach((player) => this.updatePlayer(player.name, 'selected', 0));
     },
     onPlayerJoin(players) {
         this.players = players;
@@ -172,20 +169,14 @@ export default {
         Vue.set(this.players, index, selectedPlayer);
     },
     onPlayerSelectable(selectable, active) {
+        console.log(selectable, active);
         selectable.forEach((player) => this.updatePlayer(player.name, 'selectable', true));
-        console.log(active);
     }
   }
 }
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+
+<style lang="scss">
+  @import "../node_modules/knacss/sass/knacss.scss";
 </style>
