@@ -114,6 +114,8 @@ class Controller:
             exc = game_task.exception()
             if exc is not None:
                 self.log.error(exc)
+            del self._games[game_name]
+
         future.add_done_callback(log_game_error)
 
     async def player_listen_topic(self, game_name, player_name):
@@ -122,11 +124,17 @@ class Controller:
 
     async def _run_game(self, game):
         await game.wait_for_all_player_listen()
+        while True:
+            i = 0
+            while not game.enter_in_next_phase():
+                i += 1
+                if i > 3:
+                    raise RuntimeError('No next phase but game is not done.')
 
-        game.enter_in_next_phase()
-        await asyncio.sleep(30)
-        game.close_the_current_phase()
-        await asyncio.sleep(3)
+            await asyncio.sleep(30)
+            if game.close_the_current_phase():
+                break
+            await asyncio.sleep(3)
 
     async def select_player(self,
                             game_name,

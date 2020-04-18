@@ -199,8 +199,10 @@ class WerewolfPhase(Phase):
     is_night = True
 
     def enter(self):
-        self.selectables = self._other_role_player()
         self.actives = self._current_role_players()
+        if not self.actives:
+            return False
+        self.selectables = self._other_role_player()
 
         self.notifier.send_to_game(
             self.game_name,
@@ -212,13 +214,16 @@ class WerewolfPhase(Phase):
             f'enter_in_phase.{self.role.value}',
             {'active': [p.to_dict(without='role') for p in self.actives],
              'selectable': [p.to_dict(without='role') for p in self.selectables]})
+        return True
 
     def close(self):
         removed_player = self._kill_max_selected_player()
+        msg = self._close_msg(killed=removed_player.name)
         self.notifier.send_to_game(
             self.game_name,
             'close_phase.werewolf',
-            self._close_msg(killed=removed_player.name))
+            msg)
+        return msg['winner'] is not None
 
     def _notify_when_player_is_selected(self, player: Player):
         self.notifier.send_to_role(
@@ -243,9 +248,13 @@ class SeerPhase(Phase):
             msg = self._close_msg(killed=selected_player.name)
 
         self.notifier.send_to_game(self.game_name, 'close_phase.seer', msg)
+        return msg['winner'] is not None
 
     def enter(self):
         self.actives = self._current_role_players()
+        if not self.actives:
+            return False
+
         self.selectables = [p for p in self.players if p.role != self.role]
         self.notifier.send_to_game(
             self.game_name,
@@ -257,6 +266,7 @@ class SeerPhase(Phase):
             f'enter_in_phase.{self.role.value}',
             {'active': [p.to_dict(without='role') for p in self.actives],
              'selectable': [p.to_dict(without='role') for p in self.selectables]})
+        return True
 
     def _notify_when_player_is_selected(self, player: Player):
         self.notifier.send_to_role(
@@ -272,14 +282,19 @@ class VillagerPhase(Phase):
 
     def close(self):
         removed_player = self._kill_max_selected_player()
+        msg = self._close_msg(killed=removed_player.name)
         self.notifier.send_to_game(
             self.game_name,
             'close_phase.villager',
-            self._close_msg(killed=removed_player.name))
+            msg)
+        return msg['winner'] is not None
 
     def enter(self):
         all_player_alive = [p for p in self.players if p.state is PlayerState.alive]
         self.actives = all_player_alive
+        if not self.actives:
+            return False
+
         self.selectables = all_player_alive
         self.notifier.send_to_game(
             self.game_name,
@@ -287,6 +302,8 @@ class VillagerPhase(Phase):
             {'is_night': self.is_night,
              'active': [p.to_dict(without='role') for p in self.actives],
              'selectable': [p.to_dict(without='role') for p in self.selectables]})
+
+        return True
 
     def _notify_when_player_is_selected(self, player: Player):
         self.notifier.send_to_game(
