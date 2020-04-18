@@ -1,7 +1,6 @@
 <template>
   <div id="app">
-    {{ message }}
-
+    <div v-bind:class="{ alert: !isNight, 'alert--inverse': isNight }">{{ message }}</div>
     <join-or-create
         v-if="displayLoginPage"
         v-on:create-game="createGame"
@@ -43,7 +42,7 @@ export default {
           players: [],
           displayLoginPage: true,
           displayStartGameButton: false,
-          is_night: false,
+          isNight: true,
           select_player: [],
           active_player: [],
       }
@@ -56,14 +55,14 @@ export default {
     api.onPlayerSelectable = this.onPlayerSelectable;
     api.onPlayerJoin = this.onPlayerJoin;
     api.onClosePhase = this.onClosePhase;
-    var self = this;
+    var that = this;
     api.connect().then(
         function (result) {
-            self.message = '';
+            that.message = '';
             return result;
         },
         function (error) {
-            self.message = 'ERROR: ' + error.args[0];
+            that.message = 'ERROR: ' + error.args[0];
         }
     );
     this.api = api;
@@ -72,48 +71,48 @@ export default {
     createGame(gameName, playerName) {
         this.gameName = gameName;
         this.playerName = playerName;
-        this.message = 'Create ' + this.gameName + ' ' + this.playerName;
-        var self = this;
+        var that = this;
         this.api.createGame(this.gameName, this.playerName).then(
             function (result) {
-                self.displayStartGameButton = true;
-                self.displayLoginPage = false;
+                that.message = `Bonjour ${playerName}, Bienvenue à ${gameName}`;
+                that.displayStartGameButton = true;
+                that.displayLoginPage = false;
                 return result;
             },
             function (error) {
-                self.message = 'ERROR: ' + error.args[0];
+                that.message = 'ERROR: ' + error.args[0];
             }
         );
     },
     joinGame(gameName, playerName) {
         this.gameName = gameName;
         this.playerName = playerName;
-        this.message = 'Join ' + this.gameName + ' ' + this.playerName;
-        var self = this;
+        var that = this;
         this.api.joinGame(this.gameName, this.playerName).then(
             function (result) {
-                self.message = `Vous avez rejoin la parti this.gameName`;
-                self.players = result;
-                self.displayLoginPage = false;
+                that.message = `Bonjour ${playerName}, Bienvenue à ${gameName}`;
+                that.players = result;
+                that.displayLoginPage = false;
             },
             function (error) {
-                self.message = 'ERROR: ' + error.args[0];
+                that.message = 'ERROR: ' + error.args[0];
             }
         );
     },
     startGame() {
-        var self = this;
+        var that = this;
         this.api.startGame(this.gameName).then(
             function (result) {
-                self.displayStartGameButton = false;
+                that.displayStartGameButton = false;
                 return result;
             },
             function (error) {
-                self.message = 'ERROR: ' + error.args[0];
+                that.message = 'ERROR: ' + error.args[0];
             }
         );
     },
     selectPlayer(selectPlayer) {
+        var that = this;
         this.api.selectPlayer(this.gameName, selectPlayer, this.playerName).then(
             function (result) {
                 if (result) {
@@ -124,7 +123,7 @@ export default {
                 return result;
             },
             function (error) {
-                self.message = 'ERROR: ' + error.args[0];
+                that.message = 'ERROR: ' + error.args[0];
             }
         );
     },
@@ -133,12 +132,12 @@ export default {
         Vue.set(this.players[index], key, value);
     },
     onEnterInPhase(phase) {
-        var phaseName = phase.phase;
-        self.message = `Entrée dans la phase ${phaseName}`;
+        this.message = `Entrée dans la phase ${phase.phase}`;
+        this.isNight = phase.isNight;
     },
     onClosePhase(phaseDone) {
         var killed = phaseDone.killed;
-        var resurrect = phaseDone.resurrect;
+        var resurrected = phaseDone.resurrected;
         var winner = phaseDone.winner;
 
         if (killed) {
@@ -146,9 +145,9 @@ export default {
             this.message = `${killed} a été tué`;
         }
 
-        if (resurrect) {
-            this.updatePlayer(resurrect, 'state', 'dead');
-            this.message = `${resurrect} a été ressuscité`;
+        if (resurrected) {
+            this.updatePlayer(resurrected, 'state', 'dead');
+            this.message = `${resurrected} a été ressuscité`;
         }
 
         if (winner) {
@@ -165,8 +164,7 @@ export default {
         this.updatePlayer(this.playerName, 'role', role);
     },
     onSelectedPlayer(selectedPlayer) {
-        var index = this.players.findIndex((element) => element.name === selectedPlayer.name);
-        Vue.set(this.players, index, selectedPlayer);
+        this.updatePlayer(selectedPlayer.name, 'selected', selectedPlayer.selected);
     },
     onPlayerSelectable(selectable, active) {
         console.log(selectable, active);

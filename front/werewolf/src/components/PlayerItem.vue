@@ -1,10 +1,11 @@
 <template>
-  <tr>
+  <tr v-bind:class="{'player-dead': player.state !== 'alive'}">
     <td>{{ player.name }}</td>
     <td><span v-if="player.role">{{ player.role }}</span></td>
+    <td><span v-if="player.state">{{ player.state }}</span></td>
     <td><button
         v-if="player.selectable"
-        v-on:click="$emit('player-clicked')">{{ "kill" }}</button></td>
+        v-on:click="$emit('player-clicked')">{{ player.state === 'alive' ? 'kill' : 'resurrected' }}</button></td>
     <td>{{ player.selected }}</td>
   </tr>
 </template>
@@ -17,3 +18,13 @@ export default {
   }
 }
 </script>
+
+
+<style lang="scss">
+@import "../../node_modules/knacss/sass/_config/_variables.scss";
+
+.player-dead {
+    background: $color-danger;
+}
+
+</style>

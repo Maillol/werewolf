@@ -4,6 +4,7 @@
           <tr>
             <th scope="col">Player</th>
             <th scope="col">Role</th>
+            <th scope="col">Alive</th>
             <th scope="col"></th>
             <th scope="col"></th>
           </tr>

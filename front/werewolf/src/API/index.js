@@ -147,7 +147,7 @@ export default class API {
         console.log(args, kwargs, details);
         var phase = details.topic.substring(details.topic.lastIndexOf('.') + 1);
         if (args[0].is_night !== undefined && this.onEnterInPhase !== undefined) {
-            this.onEnterInPhase({phase: phase, is_night: args[0].is_night});
+            this.onEnterInPhase({phase: phase, isNight: args[0].is_night});
         }
         if (args[0].selectable !== undefined && this.onPlayerSelectable !== undefined) {
             this.onPlayerSelectable(args[0].selectable, args[0].active);
