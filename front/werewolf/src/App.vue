@@ -1,20 +1,25 @@
 <template>
   <div id="app">
-    <div v-bind:class="{ alert: !isNight, 'alert--inverse': isNight }">{{ message }}</div>
+    <div :class="{ alert: !isNight, 'alert--inverse': isNight }">
+      {{ message }}
+    </div>
     <join-or-create
-        v-if="displayLoginPage"
-        v-on:create-game="createGame"
-        v-on:join-game="joinGame"
-    ></join-or-create>
+      v-if="displayLoginPage"
+      @create-game="createGame"
+      @join-game="joinGame"
+    />
     <div
-        v-if="displayStartGameButton">
-            <button v-on:click="startGame">Start</button>
+      v-if="displayStartGameButton"
+    >
+      <button @click="startGame">
+        Start
+      </button>
     </div>
     <div>
-        <player-board
-            v-bind:players="players"
-            v-bind:selectPlayer="selectPlayer"
-        ></player-board>
+      <player-board
+        :players="players"
+        :select-player="selectPlayer"
+      />
     </div>
   </div>
 </template>

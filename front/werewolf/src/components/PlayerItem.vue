@@ -1,20 +1,28 @@
 <template>
-  <tr v-bind:class="{'player-dead': player.state !== 'alive'}">
+  <tr :class="{'player-dead': player.state !== 'alive'}">
     <td>{{ player.name }}</td>
     <td><span v-if="player.role">{{ player.role }}</span></td>
     <td><span v-if="player.state">{{ player.state }}</span></td>
-    <td><button
+    <td>
+      <button
         v-if="player.selectable"
-        v-on:click="$emit('player-clicked')">{{ player.state === 'alive' ? 'kill' : 'resurrected' }}</button></td>
+        @click="$emit('player-clicked')"
+      >
+        {{ player.state === 'alive' ? 'kill' : 'resurrected' }}
+      </button>
+    </td>
     <td>{{ player.selected }}</td>
   </tr>
 </template>
 
 <script>
 export default {
-  name: 'player-item',
+  name: 'PlayerItem',
   props: {
-    player: Object
+    player: {
+        type: Object,
+        required: true
+    }
   }
 }
 </script>

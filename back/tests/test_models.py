@@ -1,6 +1,7 @@
-from unittest import TestCase
-from werewolf.models import Game, Notifier, Role, Player
 import pprint
+from unittest import TestCase
+
+from werewolf.models import Game, Notifier, Player, Role
 
 
 class FakeNotifier(Notifier):
