@@ -8,7 +8,7 @@
         v-if="player.selectable"
         @click="$emit('player-clicked')"
       >
-        {{ player.state === 'alive' ? 'kill' : 'resurrected' }}
+        {{ player.state === 'alive' ? $t('player-item.kill-button') : $t('player-item.resurrected-button') }}
       </button>
     </td>
     <td>{{ player.selected }}</td>

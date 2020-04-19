@@ -26,6 +26,7 @@
 
 <script>
 import Vue from 'vue'
+
 import API from './API/index.js'
 
 import JoinOrCreate from './components/JoinOrCreate.vue'
@@ -76,50 +77,46 @@ export default {
     createGame(gameName, playerName) {
         this.gameName = gameName;
         this.playerName = playerName;
-        var that = this;
         this.api.createGame(this.gameName, this.playerName).then(
-            function (result) {
-                that.message = `Bonjour ${playerName}, Bienvenue à ${gameName}`;
-                that.displayStartGameButton = true;
-                that.displayLoginPage = false;
+            (result) => {
+                this.message = this.$t('welcome', {playerName: playerName, townName: gameName});
+                this.displayStartGameButton = true;
+                this.displayLoginPage = false;
                 return result;
             },
-            function (error) {
-                that.message = 'ERROR: ' + error.args[0];
+            (error) => {
+                this.message = 'ERROR: ' + error.args[0];
             }
         );
     },
     joinGame(gameName, playerName) {
         this.gameName = gameName;
         this.playerName = playerName;
-        var that = this;
         this.api.joinGame(this.gameName, this.playerName).then(
-            function (result) {
-                that.message = `Bonjour ${playerName}, Bienvenue à ${gameName}`;
-                that.players = result;
-                that.displayLoginPage = false;
+            (result) => {
+                this.message = this.$t('welcome', {playerName: playerName, townName: gameName});
+                this.players = result;
+                this.displayLoginPage = false;
             },
-            function (error) {
-                that.message = 'ERROR: ' + error.args[0];
+            (error) => {
+                this.message = 'ERROR: ' + error.args[0];
             }
         );
     },
     startGame() {
-        var that = this;
         this.api.startGame(this.gameName).then(
-            function (result) {
-                that.displayStartGameButton = false;
+            (result) => {
+                this.displayStartGameButton = false;
                 return result;
             },
-            function (error) {
-                that.message = 'ERROR: ' + error.args[0];
+            (error) => {
+                this.message = 'ERROR: ' + error.args[0];
             }
         );
     },
     selectPlayer(selectPlayer) {
-        var that = this;
         this.api.selectPlayer(this.gameName, selectPlayer, this.playerName).then(
-            function (result) {
+            (result) => {
                 if (result) {
                     console.log('player selected !');
                 } else {
@@ -127,8 +124,8 @@ export default {
                 }
                 return result;
             },
-            function (error) {
-                that.message = 'ERROR: ' + error.args[0];
+            (error) => {
+                this.message = 'ERROR: ' + error.args[0];
             }
         );
     },
@@ -137,7 +134,15 @@ export default {
         Vue.set(this.players[index], key, value);
     },
     onEnterInPhase(phase) {
-        this.message = `Entrée dans la phase ${phase.phase}`;
+        if (phase.phase === 'werewolf') {
+            this.message = this.$t('werewolf-turn-starts');
+        } else if (phase.phase === 'villager') {
+            this.message = this.$t('villager-turn-starts');
+        } else if (phase.phase === 'seer') {
+            this.message = this.$t('seer-turn-starts');
+        } else {
+            this.message = 'Error unknown phase'
+        }
         this.isNight = phase.isNight;
     },
     onClosePhase(phaseDone) {
@@ -147,16 +152,22 @@ export default {
 
         if (killed) {
             this.updatePlayer(killed, 'state', 'dead');
-            this.message = `${killed} a été tué`;
+            this.message = this.$t('player-was-killed', {playerName: killed});
         }
 
         if (resurrected) {
             this.updatePlayer(resurrected, 'state', 'dead');
-            this.message = `${resurrected} a été ressuscité`;
+            this.message = this.$t('player-was-resurrected', {playerName: resurrected});
         }
 
         if (winner) {
-            this.message = `${winner} ont gagnés`;
+            if (winner === 'werewolf') {
+                this.message = this.$t('werewolf-win');
+            } else if (winner === 'villager') {
+                this.message = this.$t('villager-win');
+            } else {
+                this.message = 'Error unknown role win'
+            }
         }
         this.players.forEach((player) => this.updatePlayer(player.name, 'selectable', false));
         this.players.forEach((player) => this.updatePlayer(player.name, 'selected', 0));

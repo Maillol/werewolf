@@ -1,0 +1,20 @@
+{
+  "player-was-killed": "{playerName} a été tué.",
+  "player-was-resurrected": "{playerName} est revenu parmi les vivants.",
+  "werewolf-win": "Les loups garous ont tués tous les villageois.",
+  "villager-win": "Le village s'est débarrassé des loups garous.",
+  "werewolf-turn-starts": "Des loups garous rodent dans le village à la recherche de chair fraîche.",
+  "villager-turn-starts": "Le jour se lève, les villageois vont chasser le mal du village.",
+  "seer-turn-starts": "Une sorcière erre dans le village. Elle peut ressusciter comme tuer un villageois.",
+  "welcome": "Bonjour {playerName}, Bienvenue à {townName}",
+  "join-or-create-form": {
+    "game-label": "Nom de la partie",
+    "player-label": "Nom du joueur",
+    "join-button": "Rejoindre",
+    "create-button": "Créer"
+  },
+  "player-item": {
+    "resurrected-button": "ressusciter",
+    "kill-button": "tuer"
+  }
+}

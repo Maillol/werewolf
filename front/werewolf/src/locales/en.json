@@ -1,0 +1,20 @@
+{
+  "player-was-killed": "{playerName} was killed.",
+  "player-was-resurrected": "{playerName} was resurrected.",
+  "werewolf-win": "The werewolf killed all the villagers.",
+  "villager-win": "The town is werewolf cleaned",
+  "werewolf-turn-starts": "The werewolves stalks in the villager.",
+  "villager-turn-starts": "Morning comes, The villager are going to chase the devil.",
+  "seer-turn-starts": "A seer wanders about the town. She can resurrect or kill a villager.",
+  "welcome": "Hello {playerName}, welcome to the {townName}",
+  "join-or-create-form": {
+    "game-label": "Game name",
+    "player-label": "Player name",
+    "join-button": "Join",
+    "create-button": "Create"
+  },
+  "player-item": {
+    "resurrected-button": "resurrected",
+    "kill-button": "kill"
+  }
+}

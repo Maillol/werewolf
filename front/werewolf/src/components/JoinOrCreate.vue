@@ -4,7 +4,7 @@
       <label
         class="w100"
         for="playerName"
-      >Player Name</label>
+      >{{ $t('join-or-create-form.player-label') }}</label>
       <input
         id="playerName"
         v-model="playerName"
@@ -15,7 +15,7 @@
       <label
         class="w100"
         for="gameName"
-      >Game Name</label>
+      >{{ $t('join-or-create-form.game-label') }}</label>
       <input
         id="gameName"
         v-model="gameName"
@@ -27,13 +27,13 @@
         class="btn--primary w100"
         @click="$emit('create-game', gameName, playerName)"
       >
-        Create
+        {{ $t('join-or-create-form.create-button') }}
       </button>
       <button
         class="w100"
         @click="$emit('join-game', gameName, playerName)"
       >
-        Join
+        {{ $t('join-or-create-form.join-button') }}
       </button>
     </div>
   </div>
